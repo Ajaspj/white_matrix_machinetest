@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:whitematrix/constants/colorconstants.dart/colorconstants.dart';
 import 'package:whitematrix/controller/cartcontroller.dart';
+import 'package:whitematrix/model/productmodel.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -30,12 +33,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void dispose() {
     super.dispose();
-    _razorpay.clear(); // Clear Razorpay instance
+    _razorpay.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     double amount = context.read<Cartcontroller>().totalPrice();
+    List<ProductModel> products = context.read<Cartcontroller>().cartlist;
 
     return Scaffold(
       appBar: AppBar(
@@ -79,7 +83,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   Text(
-                    "\₹${amount.toStringAsFixed(2)}", // Show 2 decimal points
+                    "\₹${amount.toStringAsFixed(2)}",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -93,7 +97,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Validate payment amount
                   if (amount <= 0) {
                     showAlertDialog(context, "Invalid Amount",
                         "Please add items to your cart to proceed with payment.");
@@ -102,8 +105,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                   var options = {
                     'key': 'rzp_test_OZLq5TZcJ6rhwg',
-                    'amount':
-                        (amount * 100).toInt(), // Ensure amount is an integer
+                    'amount': (amount * 100).toInt(),
                     'name': 'crypteddata Corp.',
                     'description': 'Purchase of spices',
                     'retry': {'enabled': true, 'max_count': 1},
@@ -138,7 +140,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  String filePath = await generateBillPdf(amount);
+                  String transactionId =
+                      "TXN${DateTime.now().millisecondsSinceEpoch}";
+                  String filePath =
+                      await generateBillPdf(amount, products, transactionId);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -170,10 +175,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Future<String> generateBillPdf(double amount) async {
+  Future<String> generateBillPdf(
+      double amount, List<ProductModel> products, String transactionId) async {
     final pdf = pw.Document();
+    final dateOfPurchase = DateTime.now();
 
-    // Add a page to the PDF
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
@@ -184,24 +190,41 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 'Invoice',
                 style: pw.TextStyle(
                   fontSize: 24,
-                  fontWeight: pw.FontWeight.bold, // Use pw.FontWeight
+                  fontWeight: pw.FontWeight.bold,
                 ),
               ),
-              pw.SizedBox(height: 20), // Add spacing
-              pw.Text('Amount: ₹${amount.toStringAsFixed(2)}'),
+              pw.SizedBox(height: 20),
+              pw.Text('Transaction ID: $transactionId'),
+              pw.Text(
+                  'Date of Purchase: ${dateOfPurchase.toLocal().toString().split(' ')[0]}'),
+              pw.SizedBox(height: 20),
+              pw.Text('Products:'),
+              pw.SizedBox(height: 10),
+              ...products.map((product) {
+                return pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(product.title),
+                    pw.Text('Qty: ${product.quantity}'),
+                    pw.Text(
+                        'Price: ₹${(product.price * product.quantity).toStringAsFixed(2)}'),
+                  ],
+                );
+              }).toList(),
+              pw.SizedBox(height: 20),
+              pw.Text('Total Amount: ₹${amount.toStringAsFixed(2)}'),
             ],
           );
         },
       ),
     );
 
-    // Save the PDF file
     final Directory directory = await getApplicationDocumentsDirectory();
     final String path = directory.path;
     final File file = File('$path/Invoice.pdf');
     await file.writeAsBytes(await pdf.save());
 
-    print("PDF saved at: ${file.path}"); // Log the PDF file path
+    print("PDF saved at: ${file.path}");
     return file.path;
   }
 
@@ -253,10 +276,50 @@ class PdfViewScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Invoice"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: () async {
+              await _savePdfToDownloads(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              final XFile pdfFile = XFile(filePath);
+              Share.shareXFiles([pdfFile], text: 'Here is your invoice.');
+            },
+          ),
+        ],
       ),
       body: PDFView(
         filePath: filePath,
       ),
     );
+  }
+
+  Future<void> _savePdfToDownloads(BuildContext context) async {
+    try {
+      final Directory? downloadsDirectory = await getDownloadsDirectory();
+
+      if (downloadsDirectory != null) {
+        final File newFile = File(
+            '${downloadsDirectory.path}/Invoice_${DateTime.now().millisecondsSinceEpoch}.pdf');
+
+        await File(filePath).copy(newFile.path);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invoice saved to Downloads')),
+        );
+      }
+    } on PlatformException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save invoice: ${e.message}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
   }
 }

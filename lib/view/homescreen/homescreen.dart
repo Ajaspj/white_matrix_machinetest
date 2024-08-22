@@ -137,30 +137,13 @@ class _HomeScreenState extends State<HomeScreen>
                   onSearch: onSearch,
                 ),
                 SizedBox(height: 20),
+                _buildSectionTitle("Hot Offers", ""),
+                SizedBox(height: 10),
+                _buildHorizontalProductList(snapshot.data!.docs),
+                SizedBox(height: 20),
                 _buildSectionTitle("Special For You", "See all"),
                 SizedBox(height: 10),
-                GridView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.8,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: snapshot.data?.docs.length ?? 0,
-                  itemBuilder: (context, index) {
-                    var map = snapshot.data!.docs[index].data()
-                        as Map<String, dynamic>;
-                    try {
-                      return ProductCard(product: ProductModel.fromMap(map));
-                    } catch (e) {
-                      print('Error parsing product: $e');
-                      return SizedBox.shrink();
-                    }
-                  },
-                )
+                _buildGridProductList(snapshot.data!.docs),
               ],
             ),
           );
@@ -204,15 +187,65 @@ class _HomeScreenState extends State<HomeScreen>
             color: ColorConstants.primaryBlack,
           ),
         ),
-        Text(
-          actionText,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: ColorConstants.accentBlue,
+        if (actionText.isNotEmpty)
+          Text(
+            actionText,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: ColorConstants.accentBlue,
+            ),
           ),
-        ),
       ],
+    );
+  }
+
+  Widget _buildHorizontalProductList(List<QueryDocumentSnapshot> docs) {
+    return Container(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: docs.length,
+        itemBuilder: (context, index) {
+          var map = docs[index].data() as Map<String, dynamic>;
+          try {
+            return ProductCard(
+              product: ProductModel.fromMap(map),
+              isHorizontal: true,
+            );
+          } catch (e) {
+            print('Error parsing product: $e');
+            return SizedBox.shrink();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildGridProductList(List<QueryDocumentSnapshot> docs) {
+    return GridView.builder(
+      padding: EdgeInsets.zero,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.8,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: docs.length,
+      itemBuilder: (context, index) {
+        var map = docs[index].data() as Map<String, dynamic>;
+        try {
+          return ProductCard(
+            product: ProductModel.fromMap(map),
+            isHorizontal: false,
+          );
+        } catch (e) {
+          print('Error parsing product: $e');
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 }

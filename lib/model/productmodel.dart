@@ -19,6 +19,8 @@ class ProductModel {
     required this.quantity,
   });
 
+  get discount => null;
+
   Map<String, dynamic> toMap() {
     return {
       'title': title,

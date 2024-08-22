@@ -8,8 +8,13 @@ import 'package:whitematrix/view/detailsscreen.dart/details.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
+  final bool isHorizontal;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    Key? key,
+    required this.product,
+    this.isHorizontal = false, // Set default value
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,11 @@ class ProductCard extends StatelessWidget {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
+        margin: EdgeInsets.symmetric(
+          vertical: isHorizontal ? 4.0 : 8.0,
+          horizontal: 5.0,
+        ),
+        width: isHorizontal ? 150 : double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: ColorConstants.primaryWhite,
@@ -39,7 +48,9 @@ class ProductCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: isHorizontal
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Stack(
@@ -50,8 +61,8 @@ class ProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
                         product.image,
-                        height: 120,
-                        width: double.infinity,
+                        height: isHorizontal ? 100 : 120,
+                        width: isHorizontal ? 150 : double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -89,8 +100,10 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,7 +116,7 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${product.quantity} ",
+                    "${product.quantity}",
                     style: TextStyle(
                       fontSize: 13,
                       color: ColorConstants.lightGray,
