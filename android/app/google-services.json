@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926782243641",
+    "project_id": "whitematrix-machine-test",
+    "storage_bucket": "whitematrix-machine-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926782243641:android:9f3f987666f8e94c301ee8",
+        "android_client_info": {
+          "package_name": "com.whitematrix.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6nGdzmcie2FQueAuy1juVdhPwXQ5Lcdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
