@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:whitematrix/controller/authcontroller.dart';
 import 'package:whitematrix/controller/cartcontroller.dart';
 import 'package:whitematrix/controller/favcontroller.dart';
+import 'package:whitematrix/controller/homescreencontroller.dart';
 import 'package:whitematrix/controller/logincontroller.dart';
 import 'package:whitematrix/controller/ordercontroller.dart';
 import 'package:whitematrix/controller/otpcontroller.dart';
@@ -46,14 +47,17 @@ class MyApp extends StatelessWidget {
             create: (context) => OtpVerificationController()),
         ChangeNotifierProvider(
           create: (context) => UserController(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Homescreencontroller(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data != null) {
               return SplashScreen(
                 islogged: true,
               );

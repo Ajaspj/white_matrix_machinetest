@@ -64,7 +64,9 @@ class OtpVerificationScreen extends StatelessWidget {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HomeScreen(),
+                              builder: (context) => ScratchCardScreen(
+                                products: [],
+                              ),
                             ),
                             (route) => false,
                           );
@@ -73,7 +75,7 @@ class OtpVerificationScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ScratchCardScreen(),
+                                builder: (context) => HomeScreen(),
                               ),
                             );
                           }
@@ -135,21 +137,21 @@ class OtpVerificationScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () async {
                             await controller.verifyOtp();
-                            if (controller.errorMessage.isEmpty) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ScratchCardScreen(),
-                                ),
-                                (route) => false,
-                              );
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => HomeScreen(),
-                              //   ),
-                              // );
-                            }
+                            // if (controller.errorMessage.isEmpty) {
+                            //   Navigator.pushAndRemoveUntil(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => ScratchCardScreen(),
+                            //     ),
+                            //     (route) => false,
+                            //   );
+                            //   // Navigator.push(
+                            //   //   context,
+                            //   //   MaterialPageRoute(
+                            //   //     builder: (context) => HomeScreen(),
+                            //   //   ),
+                            //   // );
+                            // }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,
@@ -172,13 +174,14 @@ class OtpVerificationScreen extends StatelessWidget {
     );
   }
 }
+
 // import 'package:flutter/material.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:pinput/pinput.dart';
 // import 'package:provider/provider.dart';
 // import 'package:whitematrix/controller/otpcontroller.dart';
-// import 'package:whitematrix/controller/usercontroller.dart';
-// import 'package:whitematrix/view/scrathcard/scrathcard.dart'; // Import ScratchCardScreen
+// import 'package:whitematrix/view/homescreen/homescreen.dart';
+// import 'package:whitematrix/view/scrathcard/scrathcard.dart';
 
 // class OtpVerificationScreen extends StatelessWidget {
 //   final String phoneNumber;
@@ -192,7 +195,6 @@ class OtpVerificationScreen extends StatelessWidget {
 
 //   @override
 //   Widget build(BuildContext context) {
-//     Provider.of<UserController>(context);
 //     return ChangeNotifierProvider(
 //       create: (context) {
 //         final controller = OtpVerificationController();
@@ -236,16 +238,25 @@ class OtpVerificationScreen extends StatelessWidget {
 //                         controller: controller.otpController,
 //                         onChanged: controller.updateOtp,
 //                         onCompleted: (pin) async {
-//                           await controller.verifyOtp();
-//                           if (controller.errorMessage.isEmpty) {
-//                             Navigator.pushAndRemoveUntil(
-//                               context,
-//                               MaterialPageRoute(
-//                                 builder: (context) =>
-//                                     ScratchCardScreen(), // Navigate to ScratchCardScreen
-//                               ),
-//                               (route) => false,
-//                             );
+//                           try {
+//                             await controller.verifyOtp(pin, verificationId);
+//                             if (controller.errorMessage.isEmpty) {
+//                               Navigator.pushAndRemoveUntil(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => ScratchCardScreen(),
+//                                 ),
+//                                 (route) => false,
+//                               );
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => HomeScreen(),
+//                                 ),
+//                               );
+//                             }
+//                           } catch (e) {
+//                             controller.setErrorMessage(e.toString());
 //                           }
 //                         },
 //                         defaultPinTheme: PinTheme(
@@ -304,16 +315,28 @@ class OtpVerificationScreen extends StatelessWidget {
 //                         width: double.infinity,
 //                         child: ElevatedButton(
 //                           onPressed: () async {
-//                             await controller.verifyOtp();
-//                             if (controller.errorMessage.isEmpty) {
-//                               Navigator.pushAndRemoveUntil(
-//                                 context,
-//                                 MaterialPageRoute(
-//                                   builder: (context) =>
-//                                       ScratchCardScreen(), // Navigate to ScratchCardScreen
-//                                 ),
-//                                 (route) => false,
+//                             try {
+//                               await controller.verifyOtp(
+//                                 controller.otpController.text,
+//                                 verificationId,
 //                               );
+//                               if (controller.errorMessage.isEmpty) {
+//                                 Navigator.pushAndRemoveUntil(
+//                                   context,
+//                                   MaterialPageRoute(
+//                                     builder: (context) => ScratchCardScreen(),
+//                                   ),
+//                                   (route) => false,
+//                                 );
+//                                 Navigator.push(
+//                                   context,
+//                                   MaterialPageRoute(
+//                                     builder: (context) => HomeScreen(),
+//                                   ),
+//                                 );
+//                               }
+//                             } catch (e) {
+//                               controller.setErrorMessage(e.toString());
 //                             }
 //                           },
 //                           style: ElevatedButton.styleFrom(

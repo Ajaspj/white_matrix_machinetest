@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(Duration(seconds: 4)).then((value) {
-      if (widget.islogged == true) {
+      if (widget.islogged) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

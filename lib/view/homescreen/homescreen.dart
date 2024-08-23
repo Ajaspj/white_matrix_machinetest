@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:whitematrix/constants/colorconstants.dart/colorconstants.dart';
+import 'package:whitematrix/controller/homescreencontroller.dart';
 import 'package:whitematrix/model/productmodel.dart';
 import 'package:whitematrix/view/Adddatascreen/adddatascreen.dart';
 import 'package:whitematrix/view/cartscreen/cartscreen.dart';
@@ -23,7 +25,9 @@ class _HomeScreenState extends State<HomeScreen>
   var collectionRef = FirebaseFirestore.instance.collection("products");
   TextEditingController searchController = TextEditingController();
 
-  void onSearch(String query) {}
+  void setSearchText(String text) {
+    context.read<Homescreencontroller>().setSearchText(text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,25 +131,38 @@ class _HomeScreenState extends State<HomeScreen>
             );
           }
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                searchBar(
-                  searchController: searchController,
-                  onSearch: onSearch,
+          return Consumer<Homescreencontroller>(
+            builder: (BuildContext context, Homescreencontroller value,
+                Widget? child) {
+              // Filter products based on the search text
+              final filteredDocs = snapshot.data!.docs.where((doc) {
+                final product =
+                    ProductModel.fromMap(doc.data() as Map<String, dynamic>);
+                return product.title
+                    .toLowerCase()
+                    .contains(context.read<Homescreencontroller>().searchText);
+              }).toList();
+              return SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    searchBar(
+                      searchController: searchController,
+                      onSearch: setSearchText,
+                    ),
+                    SizedBox(height: 20),
+                    _buildSectionTitle("Hot Offers", ""),
+                    SizedBox(height: 10),
+                    _buildHorizontalProductList(filteredDocs),
+                    SizedBox(height: 20),
+                    _buildSectionTitle("Special For You", "See all"),
+                    SizedBox(height: 10),
+                    _buildGridProductList(filteredDocs),
+                  ],
                 ),
-                SizedBox(height: 20),
-                _buildSectionTitle("Hot Offers", ""),
-                SizedBox(height: 10),
-                _buildHorizontalProductList(snapshot.data!.docs),
-                SizedBox(height: 20),
-                _buildSectionTitle("Special For You", "See all"),
-                SizedBox(height: 10),
-                _buildGridProductList(snapshot.data!.docs),
-              ],
-            ),
+              );
+            },
           );
         },
       ),
@@ -201,11 +218,13 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildHorizontalProductList(List<QueryDocumentSnapshot> docs) {
+    int itemCount = docs.length < 5 ? docs.length : 5;
+
     return Container(
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: docs.length,
+        itemCount: itemCount,
         itemBuilder: (context, index) {
           var map = docs[index].data() as Map<String, dynamic>;
           try {

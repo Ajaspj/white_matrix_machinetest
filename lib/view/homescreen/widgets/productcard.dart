@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:whitematrix/constants/colorconstants.dart/colorconstants.dart';
@@ -13,7 +14,7 @@ class ProductCard extends StatelessWidget {
   const ProductCard({
     Key? key,
     required this.product,
-    this.isHorizontal = false, // Set default value
+    this.isHorizontal = false,
   }) : super(key: key);
 
   @override
@@ -59,11 +60,17 @@ class ProductCard extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        product.image,
+                      child: CachedNetworkImage(
+                        imageUrl: product.image,
                         height: isHorizontal ? 100 : 120,
                         width: isHorizontal ? 150 : double.infinity,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) => Center(
+                          child: Icon(Icons.error),
+                        ),
                       ),
                     ),
                   ),
