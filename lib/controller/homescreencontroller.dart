@@ -12,7 +12,6 @@ class Homescreencontroller with ChangeNotifier {
   String _searchText = "";
   String get searchText => _searchText;
 
-  // Method to fetch products from Firestore
   Future<void> fetchProducts() async {
     final snapshot = await collectionRef.get();
     _products = snapshot.docs.map((doc) {
@@ -21,13 +20,11 @@ class Homescreencontroller with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to set search text
   void setSearchText(String text) {
     _searchText = text.toLowerCase();
     notifyListeners();
   }
 
-  // Method to get filtered products based on the search text
   List<ProductModel> get filteredProducts {
     if (_searchText.isEmpty) {
       return _products;

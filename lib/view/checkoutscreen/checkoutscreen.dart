@@ -62,7 +62,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         "address": addressController.text,
                       });
 
-                      // Navigate to payment screen after saving details
                       Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class UserController extends ChangeNotifier {
-  bool _isFirstTimeLogin = true; // Assume true for the first login
-  bool _hasDiscount = false; // To track if the user has received the discount
-  int _discountPercentage = 0; // Stores the discount percentage
+  bool _isFirstTimeLogin = true;
+  bool _hasDiscount = false;
+  int _discountPercentage = 0;
 
   bool get isFirstTimeLogin => _isFirstTimeLogin;
   bool get hasDiscount => _hasDiscount;
@@ -26,17 +26,11 @@ class UserController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Call this method after user logs in to check if it's their first login
   void checkFirstTimeLogin() {
-    if (_isFirstTimeLogin) {
-      // Logic to check first time login
-      // This can be a check from your database or local storage
-    }
+    if (_isFirstTimeLogin) {}
   }
 
-  // Method to handle user login
   Future<void> loginUser(String userId) async {
-    // Logic to authenticate and login user
     checkFirstTimeLogin();
   }
 }

@@ -57,6 +57,8 @@ dependencies:
   pdf: ^3.11.1
   scratcher: ^2.5.0
   cached_network_image: ^3.4.0
+  animate_do: ^3.3.4
+  flutter_staggered_animations: ^1.1.1
  
 
  
