@@ -1,16 +1,28 @@
 # white_matrix_machinetest
 
-A new Flutter project.
 
-## Getting Started
+This project is a modern e-commerce app built with Flutter. It features a stylish and engaging user interface with animations, and includes various screens such as Home, Cart, Favorites, and more.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Home Screen**
+  - Hot Offers and Special Offers sections
+  - Search functionality with a dynamic search bar
+  - Smooth animations for product listings
+  - Integrated Firebase Firestore for real-time data fetching
+  - Dropdown menu for easy access to My Orders, Add Data, and Logout options
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Cart Screen**
+  - Displays selected products in the cart
+  - Option to remove items from the cart
+  - Proceed to checkout functionality
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Favorites Screen**
+  - Displays user's favorite products
+  - Allows easy navigation to product details
+
+- **Authentication**
+  - Firebase Authentication for secure login and logout
+
+- **Add Data Screen**
+  - Allows users to add new product data to Firebase Firestore
